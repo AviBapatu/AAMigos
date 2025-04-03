@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import routes from './routes/index.js';
 dotenv.config();
 
 const app = express();
@@ -21,6 +22,8 @@ const connectDb = async() => {
 }
 
 connectDb();
+
+app.use('/api' , routes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

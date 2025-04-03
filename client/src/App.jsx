@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react';
+import ReactDOM from 'react-dom/client'
 import './App.css'
+import {BrowserRouter, Navigate, Route, Router, Routes} from "react-router-dom";
+import './index.css';
+import LogInSignUp from "./Pages/LogInSignUp.jsx";
+import UserProfileSetup from './Pages/profileSetup/UserProfileSetup.jsx';
+import AgentProfileSetup from './Pages/profileSetup/AgentProfileSetup.jsx';
+import Home from "./Pages/Home.jsx";
+import AgentDashboard from './Pages/agent/AgentDash.jsx';
+import AgentPickup from './Pages/agent/AgentPickup.jsx';
+import AgentProfilePage from './Pages/agent/AgentProfile.jsx';
+import AgentOrders from './Pages/agent/AgentOrders.jsx';
+import AgentProfileEdit from './Pages/agent/AgentProfileEdit.jsx';
+import CustomerDashboard from './Pages/customer/CustomerDash.jsx';
+import CustomerOrder from './Pages/customer/CustomerOrder.jsx';
+import CustomerProfile from './Pages/customer/CustomerProfile.jsx';
+import CustomerProfileEdit from './Pages/customer/CustomerProfileEdit.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 function App() {
-  const [count, setCount] = useState(1)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path={"*"} element={<Home />}/>
+            <Route path={"/login"} element={<LogInSignUp />}/>
+            <Route path={'/customer/setupProfile'} element={<UserProfileSetup />} />
+            <Route path={'/agent/setupProfile'} element={<AgentProfileSetup />} />
+            <Route path={"/agent/dashboard"} element={<AgentDashboard />}/>
+            <Route path={"/agent/pickup"} element={<AgentPickup />}/>
+            <Route path={"/agent/profile"} element={<AgentProfilePage />}/>
+            <Route path={"/agent/orders"} element={<AgentOrders />}/>
+            <Route path={"/agent/editProfile"} element={<AgentProfileEdit />}/>
+            <Route path={"/customer/dashboard"} element={<CustomerDashboard />}/>
+            <Route path={"/customer/orders"} element={<CustomerOrder />}/>
+            <Route path={"/customer/profile"} element={<CustomerProfile />}/>
+            <Route path={"/customer/editProfile"} element={<CustomerProfileEdit />}/>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    );
 }
 
 export default App
