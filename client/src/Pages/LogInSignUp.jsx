@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import axios from 'axios';
 import Logo from '../assets/Logo.png'
 import { useAuth } from '../context/AuthContext.jsx';
+import { useEffect } from 'react';
 
 function LogInSignUp() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,11 @@ function LogInSignUp() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const { isAgent } = useAuth();
+  useEffect(() => {
+    if(isAgent === null){
+      navigate('/'); 
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,48 +28,55 @@ function LogInSignUp() {
       }
 
       console.log(isAgent);
+      if(isAgent === null){
+        navigate('/'); 
+      }
       if(!isAgent){
         if (isRegistering) {
-        const response = await axios.post("http://localhost:3000/api/auth/user/register", {
+        const response = await axios.post("/api/auth/user/register", {
           email,
           password
         });
 
         const token = response.data.token;
         localStorage.setItem("token", token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         alert("Registration Successful!");
         navigate('/customer/setupProfile');
       } else {
-        const response = await axios.post("http://localhost:3000/api/auth/user/login", {
+        const response = await axios.post("/api/auth/user/login", {
           email,
           password
         });
 
         const token = response.data.token;
         localStorage.setItem("token", token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         alert("LogIn Successful!");
         navigate('/customer/Dashboard');
       }
     }
     else{
       if (isRegistering) {
-        const response = await axios.post("http://localhost:3000/api/auth/agent/register", {
+        const response = await axios.post("/api/auth/agent/register", {
           email,
           password
         });
 
         const token = response.data.token;
         localStorage.setItem("token", token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         alert("Registration Successful!");
         navigate('/agent/setupProfile');
       } else {
-        const response = await axios.post("http://localhost:3000/api/auth/agent/login", {
+        const response = await axios.post("/api/auth/agent/login", {
           email,
           password
         });
 
         const token = response.data.token;
         localStorage.setItem("token", token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         alert("Login Successful!");
         navigate('/Agent/Dashboard');
       } 
