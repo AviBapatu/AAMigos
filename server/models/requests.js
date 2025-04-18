@@ -6,13 +6,21 @@ const requestSchema = new mongoose.Schema({
   issueDescription: String,
   status: { 
     type: String, 
-    enum: ["Pending", "Approved", "Picked Up", "In Repair", "Completed", "Denied"],
+    enum: ["Pending", "Approved", "PickedUp", "FreeApproval", "InRepair", "Delivering", "Paid", "Completed", "Cancelled"],
     default: "Pending" 
   },
   assignedAgent: { type: mongoose.Schema.Types.ObjectId, ref: "Agent" },
   selectedServiceCenter: { type: mongoose.Schema.Types.ObjectId, ref: "ServiceCenter" },
-  amountDue: { type: Number, default: 0 }, // Amount to be paid by the customer
-  isPaid: { type: Boolean, default: false }, // Tracks if payment is completed
+  affordable: { type: Map, of: Number},
+  goodToHave : { type: Map, of: Number},
+  niceToHave: { type: Map, of: Number},
+  userPackage: { 
+    type: String,
+    enum: ["affordable", "goodToHave", "niceToHave","Pending"],
+    default: "Pending"
+   },
+  amountDue: { type: Number, default: 300 },
+  isPaid: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 
