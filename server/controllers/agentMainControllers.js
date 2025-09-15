@@ -5,6 +5,7 @@ import DeviceModel from "../models/deviceModels.js";
 import Company from "../models/companies.js";
 import DeviceCategory from "../models/deviceCategories.js";
 import Agent from "../models/agents.js";
+import { populate } from "dotenv";
 
 export const getPendingRequests = async(req,res) =>{
     try{
@@ -157,9 +158,19 @@ export const trackOrder= async (req,res) =>{
             populate: {
             path: "model",
             select: "name img",
-            },
+            populate: {
+                path: "company",
+                populate: {
+                    path: "serviceCenters"
+                },
+            }
+        },
         })
         .populate("user", "name profilePicture phone address");
+        if(!request){
+            return res.status(404).json({message:"Request not found"}); 
+        }
+        res.status(200).json(request);
     } 
     catch(error){
         res.status(500).json({message:error.message});
@@ -168,12 +179,70 @@ export const trackOrder= async (req,res) =>{
 
 export const updateStatus = async (req,res) =>{
     try{
-        const {requestId ,status} =  req.params;
-        const request = await Request.findById(requestId); 
+        const {reqId ,status} =  req.params;
+        const request = await Request.findById(reqId); 
         request.status = status;
         await request.save();
         res.status(200).json({message:"Status updated successfully"});
     } 
+    catch(error){
+        res.status(500).json({message:error.message});
+    }
+}
+export const packages = async (req,res) =>{
+    try{
+        const { affordable, goodToHave, niceToHave }= req.body;
+        console.log(req.body);
+        const convertToMap = (list) => {
+            const map = {};
+            list.forEach(item => {
+                map[item.label.trim()] = item.price;
+            });
+            return map;
+        };
+        const {reqId} = req.params;
+        const request = await Request.findById(reqId);
+        request.affordable = convertToMap(affordable);
+        request.goodToHave = convertToMap(goodToHave);
+        request.niceToHave = convertToMap(niceToHave);
+        await request.save();
+        res.status(200).json({message:"Packages updated successfully"});
+    } 
+    catch(error){
+        res.status(401).json({message:error.message});
+    }
+}
+
+export const getPackage = async (req,res) =>{
+    try{
+        const {requestId} = req.params;
+        const {userPackage}=req.body;
+        const request = await Request.findById(requestId)  
+        .populate({
+            path: "device",
+            populate: {
+            path: "model",
+            select: "name img",
+            },
+        })
+        res.status(200).json(request);
+    }
+    catch(error){
+        res.status(500).json({message:error.message});
+    }
+}
+
+export const freeService = async(req,res) => {
+    try{
+        const {reqId} = req.params;
+        const request = await Request.findById(reqId);
+        if(!request){
+            return res.status(404).json({message:"Request not found"});
+        }
+        request.FreeService = true;
+        await request.save();
+        res.status(200).json({message:"Free Service Updated successfully"});
+    }
     catch(error){
         res.status(500).json({message:error.message});
     }
